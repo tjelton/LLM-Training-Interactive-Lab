@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Lab: Model Training and Fine-tuning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Progress bar -->
+  <div class="progress-bar">
+    <div class="progress-fill"></div>
+  </div>
+
+  <!-- Theme toggle -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode">
+    <span class="theme-toggle-icon sun">&#9728;</span>
+    <span class="theme-toggle-icon moon">&#9790;</span>
+    <span class="theme-toggle-slider"></span>
+  </button>
+
+  <!-- ===== PAGE CONTAINER ===== -->
+  <main class="page-container">
+
+    <!-- ==================== HOME ==================== -->
+    <section id="home" class="page">
+      <div class="home-hero">
+        <h1>Interactive Lab: <span class="accent">Model Training &amp; Fine-tuning</span></h1>
+        <p class="subtitle">Explore how large language models are built, interact with GPT-2, and consider the ethical implications of AI.</p>
+      </div>
+
+      <div class="home-body">
+        <!-- Left: summary -->
+        <div class="home-summary">
+          <h3>About this Lab</h3>
+          <p>In this lab, you will get hands-on experience with a real
+            language model. You will explore how models like GPT-2 are
+            pre-trained, load and interact with one yourself, consider the
+            ethical implications of AI, experiment with different text
+            generation strategies, and fine-tune a model on your own data.
+            No prior coding experience is required.</p>
+        </div>
+
+        <!-- Right: stacked task list -->
+        <div class="task-list">
+          <a class="task-card" data-page="task1">
+            <span class="task-badge">Task 1</span>
+            <span class="task-info">
+              <span class="task-title">Model Pre-Training</span>
+              <span class="task-desc">Understand the fundamentals of how LLMs are initially trained.</span>
+            </span>
+            <span class="task-arrow">&rarr;</span>
+          </a>
+
+          <a class="task-card" data-page="task2">
+            <span class="task-badge">Task 2</span>
+            <span class="task-info">
+              <span class="task-title">Loading a GPT-2 Model</span>
+              <span class="task-desc">Get hands-on with a real language model using Google Colab.</span>
+            </span>
+            <span class="task-arrow">&rarr;</span>
+          </a>
+
+          <a class="task-card" data-page="task3">
+            <span class="task-badge">Task 3</span>
+            <span class="task-info">
+              <span class="task-title">Ethical Considerations</span>
+              <span class="task-desc">Explore case studies on the ethics of training and fine-tuning AI.</span>
+            </span>
+            <span class="task-arrow">&rarr;</span>
+          </a>
+
+          <a class="task-card" data-page="task4">
+            <span class="task-badge">Task 4</span>
+            <span class="task-info">
+              <span class="task-title">Token Prediction</span>
+              <span class="task-desc">Experiment with different sampling methods for text generation.</span>
+            </span>
+            <span class="task-arrow">&rarr;</span>
+          </a>
+
+          <a class="task-card" data-page="task5">
+            <span class="task-badge">Task 5</span>
+            <span class="task-info">
+              <span class="task-title">Fine-Tuning</span>
+              <span class="task-desc">Fine-tune GPT-2 on custom data and compare the results.</span>
+            </span>
+            <span class="task-arrow">&rarr;</span>
+          </a>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        AI Literacy Course - Interactive Lab
+      </footer>
+    </section>
+
+    <!-- ==================== TASK 1 ==================== -->
+    <section id="task1" class="page">
+      <div class="task-header">
+        <div class="breadcrumb">Task 1 of 5</div>
+        <span class="duration">~20 min</span>
+        <h2>Model Pre-Training</h2>
+        <p class="task-intro">In the first task, we start with a recap on model pre-training.</p>
+      </div>
+      <hr class="section-divider">
+
+      <p style="margin-bottom:1.5rem;color:var(--clr-text-muted);line-height:1.8;">
+        Before a language model can answer your questions or write text, it must go through a process called <strong
+          style="color:var(--clr-text);">pre-training</strong>. This is the stage where the model learns about language from scratch, by reading
+          through enormous amounts of text — think billions of web pages, books, and articles. In this task, we will explore the key steps that make
+          up pre-training: how text is broken into pieces the model can process, how meaning is represented numerically, how the model figures out
+          which words relate to which, how it learns to predict what comes next, and how it improves itself by learning from its mistakes. By the end
+          of Task 1, you will have a clear picture of what is happening "under the hood" every time a language model generates text.
+      </p>
+
+      <!-- Step 2: Interactive Pre-Training Pipeline (growing diagram) -->
+      <div class="pipeline" id="pretrainPipeline">
+        <!-- Tab bar -->
+        <div class="pipeline-steps">
+          <button class="pipeline-step-tab active" data-slide="0"><span class="tab-num">1</span>Tokenisation</button>
+          <button class="pipeline-step-tab" data-slide="1"><span class="tab-num">2</span>Embedding</button>
+          <button class="pipeline-step-tab" data-slide="2"><span class="tab-num">3</span>Attention</button>
+          <button class="pipeline-step-tab" data-slide="3"><span class="tab-num">4</span>Prediction</button>
+          <button class="pipeline-step-tab" data-slide="4"><span class="tab-num">5</span>Loss</button>
+          <button class="pipeline-step-tab" data-slide="5"><span class="tab-num">6</span>Backpropagation</button>
+          <button class="pipeline-step-tab" data-slide="6"><span class="tab-num">7</span>Scale &amp; Iterate</button>
+        </div>
+
+        <!-- Two-column body: diagram + description -->
+        <div class="pipeline-body">
+
+          <!-- Left: growing SVG diagram -->
+          <div class="pipeline-diagram-wrap" id="pipelineDiagramWrap">
+            <svg id="pipelineSvg" viewBox="0 0 500 430" preserveAspectRatio="xMidYMin meet" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c6ef5"/>
+                </marker>
+                <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#f87171"/>
+                </marker>
+              </defs>
+
+              <!-- INPUT (always visible) -->
+              <g class="pipeline-input">
+                <rect x="110" y="6" width="280" height="34" rx="10" fill="#1e2535" stroke="#242c3d" stroke-width="1.5"/>
+                <text x="250" y="28" text-anchor="middle" fill="#e6eaf4" font-size="14" font-family="Inter, sans-serif">"The cat sat on"</text>
+              </g>
+
+              <!-- STEP 0: Tokenisation -->
+              <g class="step-group current" data-step="0">
+                <line x1="250" y1="40" x2="250" y2="55" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowPurple)"/>
+                <text x="445" y="73" text-anchor="end" fill="#8892a4" font-size="10" font-style="italic" font-family="Inter, sans-serif">Tokenise</text>
+                <rect x="100" y="59" width="66" height="26" rx="6" fill="rgba(124,110,245,0.12)" stroke="#7c6ef5" stroke-width="1.5"/>
+                <text x="133" y="77" text-anchor="middle" fill="#a899f8" font-size="12" font-weight="600" font-family="Inter, sans-serif">The</text>
+                <rect x="174" y="59" width="66" height="26" rx="6" fill="rgba(124,110,245,0.12)" stroke="#7c6ef5" stroke-width="1.5"/>
+                <text x="207" y="77" text-anchor="middle" fill="#a899f8" font-size="12" font-weight="600" font-family="Inter, sans-serif">cat</text>
+                <rect x="248" y="59" width="66" height="26" rx="6" fill="rgba(124,110,245,0.12)" stroke="#7c6ef5" stroke-width="1.5"/>
+                <text x="281" y="77" text-anchor="middle" fill="#a899f8" font-size="12" font-weight="600" font-family="Inter, sans-serif">sat</text>
+                <rect x="322" y="59" width="66" height="26" rx="6" fill="rgba(124,110,245,0.12)" stroke="#7c6ef5" stroke-width="1.5"/>
+                <text x="355" y="77" text-anchor="middle" fill="#a899f8" font-size="12" font-weight="600" font-family="Inter, sans-serif">on</text>
+              </g>
+
+              <!-- STEP 1: Embedding -->
+              <g class="step-group" data-step="1">
+                <line x1="250" y1="85" x2="250" y2="102" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowPurple)"/>
+                <text x="445" y="121" text-anchor="end" fill="#8892a4" font-size="10" font-style="italic" font-family="Inter, sans-serif">Embed</text>
+                <rect x="100" y="106" width="66" height="26" rx="6" fill="rgba(34,211,238,0.08)" stroke="#0891b2" stroke-width="1.5"/>
+                <text x="133" y="123" text-anchor="middle" fill="#22d3ee" font-size="8.5" font-family="monospace">[0.2,…]</text>
+                <rect x="174" y="106" width="66" height="26" rx="6" fill="rgba(34,211,238,0.08)" stroke="#0891b2" stroke-width="1.5"/>
+                <text x="207" y="123" text-anchor="middle" fill="#22d3ee" font-size="8.5" font-family="monospace">[1.1,…]</text>
+                <rect x="248" y="106" width="66" height="26" rx="6" fill="rgba(34,211,238,0.08)" stroke="#0891b2" stroke-width="1.5"/>
+                <text x="281" y="123" text-anchor="middle" fill="#22d3ee" font-size="8.5" font-family="monospace">[-0.5,…]</text>
+                <rect x="322" y="106" width="66" height="26" rx="6" fill="rgba(34,211,238,0.08)" stroke="#0891b2" stroke-width="1.5"/>
+                <text x="355" y="123" text-anchor="middle" fill="#22d3ee" font-size="8.5" font-family="monospace">[0.8,…]</text>
+              </g>
+
+              <!-- STEP 2: Attention -->
+              <g class="step-group" data-step="2">
+                <line x1="250" y1="132" x2="250" y2="149" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowPurple)"/>
+                <text x="445" y="174" text-anchor="end" fill="#8892a4" font-size="10" font-style="italic" font-family="Inter, sans-serif">Attention</text>
+                <!-- Attention arcs -->
+                <path d="M133 153 Q220 178 355 153" stroke="#fbbf24" stroke-width="1" fill="none" opacity="0.3"/>
+                <path d="M207 153 Q260 172 355 153" stroke="#fbbf24" stroke-width="2.5" fill="none" opacity="0.8"/>
+                <path d="M281 153 Q310 165 355 153" stroke="#fbbf24" stroke-width="1.5" fill="none" opacity="0.5"/>
+                <!-- Context-aware result -->
+                <rect x="100" y="175" width="288" height="22" rx="8" fill="rgba(124,110,245,0.06)" stroke="#7c6ef5" stroke-width="1" stroke-dasharray="4 2"/>
+                <text x="244" y="190" text-anchor="middle" fill="#a899f8" font-size="10.5" font-family="Inter, sans-serif">Context-aware representations</text>
+              </g>
+
+              <!-- STEP 3: Next-Token Prediction -->
+              <g class="step-group" data-step="3">
+                <line x1="250" y1="197" x2="250" y2="212" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowPurple)"/>
+                <text x="445" y="238" text-anchor="end" fill="#8892a4" font-size="10" font-style="italic" font-family="Inter, sans-serif">Predict</text>
+                <text x="100" y="227" fill="#e6eaf4" font-size="11" font-weight="600" font-family="Inter, sans-serif">Next word?</text>
+                <!-- Bar 1: "the" 80% -->
+                <rect x="100" y="233" width="288" height="15" rx="4" fill="rgba(34,211,238,0.06)"/>
+                <rect x="100" y="233" width="230" height="15" rx="4" fill="rgba(34,211,238,0.2)"/>
+                <text x="106" y="244" fill="#22d3ee" font-size="10" font-weight="600" font-family="Inter, sans-serif">"the" — 80%</text>
+                <!-- Bar 2: "a" 12% -->
+                <rect x="100" y="252" width="288" height="15" rx="4" fill="rgba(34,211,238,0.06)"/>
+                <rect x="100" y="252" width="35" height="15" rx="4" fill="rgba(34,211,238,0.15)"/>
+                <text x="106" y="263" fill="#22d3ee" font-size="10" font-family="Inter, sans-serif">"a" — 12%</text>
+                <!-- Bar 3: "top" 5% -->
+                <rect x="100" y="271" width="288" height="15" rx="4" fill="rgba(34,211,238,0.06)"/>
+                <rect x="100" y="271" width="14" height="15" rx="4" fill="rgba(34,211,238,0.1)"/>
+                <text x="106" y="282" fill="#22d3ee" font-size="10" font-family="Inter, sans-serif">"top" — 5%</text>
+              </g>
+
+              <!-- STEP 4: Loss Calculation -->
+              <g class="step-group" data-step="4">
+                <line x1="250" y1="286" x2="250" y2="300" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowPurple)"/>
+                <text x="445" y="322" text-anchor="end" fill="#8892a4" font-size="10" font-style="italic" font-family="Inter, sans-serif">Loss</text>
+                <!-- Predicted -->
+                <rect x="100" y="304" width="125" height="26" rx="6" fill="rgba(34,211,238,0.08)" stroke="#0891b2" stroke-width="1"/>
+                <text x="162" y="321" text-anchor="middle" fill="#22d3ee" font-size="10.5" font-weight="600" font-family="Inter, sans-serif">Predicted: "the"</text>
+                <!-- vs -->
+                <text x="244" y="321" text-anchor="middle" fill="#a899f8" font-size="13" font-weight="700" font-family="Inter, sans-serif">vs</text>
+                <!-- Actual -->
+                <rect x="263" y="304" width="125" height="26" rx="6" fill="rgba(52,211,153,0.08)" stroke="#059669" stroke-width="1"/>
+                <text x="325" y="321" text-anchor="middle" fill="#34d399" font-size="10.5" font-weight="600" font-family="Inter, sans-serif">Actual: "the"</text>
+                <!-- Loss result -->
+                <line x1="244" y1="330" x2="244" y2="340" stroke="#7c6ef5" stroke-width="1.5" marker-end="url(#arrowPurple)"/>
+                <rect x="168" y="344" width="152" height="22" rx="6" fill="rgba(245,158,11,0.1)" stroke="#b45309" stroke-width="1.5"/>
+                <text x="244" y="359" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="700" font-family="Inter, sans-serif">Loss = 0.22 (low)</text>
+              </g>
+
+              <!-- STEP 5: Backpropagation -->
+              <g class="step-group" data-step="5">
+                <!-- Backward arrow along left side -->
+                <path d="M100 366 L72 366 L72 59 L100 59" stroke="#f87171" stroke-width="2" stroke-dasharray="6 3" fill="none" marker-end="url(#arrowRed)"/>
+                <!-- Ticks at each stage -->
+                <line x1="72" y1="106" x2="82" y2="106" stroke="#f87171" stroke-width="2"/>
+                <line x1="72" y1="175" x2="82" y2="175" stroke="#f87171" stroke-width="2"/>
+                <line x1="72" y1="233" x2="82" y2="233" stroke="#f87171" stroke-width="2"/>
+                <!-- Label -->
+                <text x="56" y="220" text-anchor="middle" fill="#f87171" font-size="9" font-weight="600" font-family="Inter, sans-serif" transform="rotate(-90 56 220)">error signal adjusts weights</text>
+              </g>
+
+              <!-- STEP 6: Scale & Iteration -->
+              <g class="step-group" data-step="6">
+                <!-- Loop arrow along right side -->
+                <path d="M388 358 L440 358 L440 23 L400 23" stroke="#7c6ef5" stroke-width="2" stroke-dasharray="6 3" fill="none" marker-end="url(#arrowPurple)" opacity="0.7"/>
+                <text x="456" y="200" text-anchor="middle" fill="#a899f8" font-size="9" font-weight="600" font-family="Inter, sans-serif" transform="rotate(90 456 200)">repeat billions of times</text>
+                <!-- Scale info box -->
+                <rect x="100" y="378" width="288" height="44" rx="8" fill="rgba(124,110,245,0.05)" stroke="#242c3d" stroke-width="1"/>
+                <text x="244" y="396" text-anchor="middle" fill="#e6eaf4" font-size="11" font-weight="700" font-family="Inter, sans-serif">Billions of examples &middot; Weeks of compute &middot; 1000s of GPUs</text>
+                <text x="244" y="414" text-anchor="middle" fill="#22d3ee" font-size="10.5" font-weight="600" font-family="Inter, sans-serif">The model improves with every pass</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Right: description panel -->
+          <div class="pipeline-desc-panel">
+            <div class="pipeline-desc-slide active" data-step="0">
+              <h3 class="slide-title">Step 1: Tokenisation</h3>
+              <p class="slide-desc">Before the model can process text, it must first break the input into smaller pieces called
+                <strong>tokens</strong>. Tokens are usually common words or parts of words. For example, the sentence "The cat sat on" becomes four
+                tokens. This is how the model reads - not letter by letter, but token by token.</p>
+            </div>
+            <div class="pipeline-desc-slide" data-step="1">
+              <h3 class="slide-title">Step 2: Embedding</h3>
+              <p class="slide-desc">Computers cannot work directly with words, so each token is converted into a list of numbers called an
+                <strong>embedding</strong>. Think of this as translating each word into a unique set of coordinates in a "meaning space" - words with
+                similar meanings end up with similar numbers, helping the model understand relationships between words.</p>
+            </div>
+            <div class="pipeline-desc-slide" data-step="2">
+              <h3 class="slide-title">Step 3: Attention</h3>
+              <p class="slide-desc">The <strong>attention</strong> mechanism lets each token "look at" every other token to figure out which words are
+                most relevant. For example, "on" might pay strong attention to "cat" because understanding what sat on something matters. This is the
+                key innovation behind modern language models.</p>
+            </div>
+            <div class="pipeline-desc-slide" data-step="3">
+              <h3 class="slide-title">Step 4: Next-Token Prediction</h3>
+              <p class="slide-desc">After processing through embedding and attention, the model produces a <strong>probability for every possible next
+                token</strong>. Given "The cat sat on", it might predict "the" at 80%, "a" at 12%, and so on. The model's entire job during
+                pre-training is to get better at this prediction task.</p>
+            </div>
+            <div class="pipeline-desc-slide" data-step="4">
+              <h3 class="slide-title">Step 5: Loss Calculation</h3>
+              <p class="slide-desc">The <strong>loss</strong> measures how wrong the prediction was. The model's guess is compared to the actual next
+                word from the training text. If it predicted well, the loss is low. If it guessed poorly, the loss is high. The goal of training is to
+                make this number as small as possible.</p>
+            </div>
+            <div class="pipeline-desc-slide" data-step="5">
+              <h3 class="slide-title">Step 6: Backpropagation</h3>
+              <p class="slide-desc"><strong>Backpropagation</strong> is how the model learns from mistakes. An error signal flows backward through
+                every stage, telling each part how to adjust its internal settings ("weights") so the next prediction is a little better. Think of it
+                like a teacher giving feedback on each section of an exam.</p>
+            </div>
+            <div class="pipeline-desc-slide" data-step="6">
+              <h3 class="slide-title">Step 7: Scaling &amp; Iteration</h3>
+              <p class="slide-desc">Steps 1&ndash;6 are not done just once - they are repeated <strong>billions of times</strong> across enormous
+                amounts of text. With each pass, the model adjusts its weights slightly and becomes a little better at prediction. This takes
+                thousands of GPUs running for weeks or months. By the end, the model has learned rich patterns about language.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide navigation -->
+        <div class="pipeline-nav">
+          <button class="pipeline-nav-btn" id="pipelinePrev" disabled>&larr; Previous</button>
+          <span class="pipeline-counter"><span id="pipelineCurrent">1</span> / 7</span>
+          <button class="pipeline-nav-btn" id="pipelineNext">Next &rarr;</button>
+        </div>
+      </div>
+
+      <p style="margin-bottom:1.5rem;color:var(--clr-text-muted);line-height:1.8;">
+        When you chat with a language model like ChatGPT or Claude, the model is still performing the same first four steps you saw in the diagram
+          above - tokenisation, embedding, attention, and next-token prediction. These steps happen every time the model generates a single word in
+          its response. However, the final three steps - loss calculation, backpropagation, and scaling - are <strong
+          style="color:var(--clr-text);">no longer active</strong>. Those steps are only needed during training, when the model has a correct answer
+          to compare against and needs to learn from its mistakes. Once training is complete, the model's weights are <em>frozen</em>: they no longer
+          change, and the model simply uses what it has already learned to predict the most likely next token, one at a time, until a full response is
+          generated.
+      </p>
+
+      <div class="callout discussion">
+        <div class="callout-title"><span class="icon">&#128172;</span> Group Discussion</div>
+        <ol>
+          <li>Why is it that when a user is interacting with an LLM, the model
+            no longer does the loss calculation, backpropagation, scaling and
+            iteration steps? What would be the implications if these steps
+            were still used?</li>
+          <li>How is LLM pre-training different from how humans learn
+            language?</li>
+          <li>The model has learned statistical patterns about which tokens
+            follow which. Does this mean the model 'understands' language?
+            Why or why not?</li>
+          <li>What method do you think the model uses to predict the next
+            token when a user interacts with an LLM?</li>
+        </ol>
+      </div>
+
+      <nav class="page-nav">
+        <button class="nav-btn" data-nav="home">
+          <span class="arrow">&larr;</span> Home
+        </button>
+        <button class="nav-btn primary" data-nav="task2">
+          Task 2: Loading GPT-2 <span class="arrow">&rarr;</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- ==================== TASK 2 ==================== -->
+    <section id="task2" class="page">
+      <div class="task-header">
+        <div class="breadcrumb">Task 2 of 5</div>
+        <span class="duration">~15 min</span>
+        <h2>Loading a GPT-2 Model</h2>
+        <p class="task-intro">In task 2, we load in GPT2, an LLM which can be locally downloaded to your computer.</p>
+      </div>
+      <hr class="section-divider">
+
+      <p style="margin-bottom:1.5rem;color:var(--clr-text-muted);line-height:1.8;">
+        In 2019, OpenAI released <strong style="color:var(--clr-text);">GPT-2</strong> - a large language model that was, at the time, considered too
+          powerful to release publicly. OpenAI eventually made it fully available, and today it is one of the most widely used models for learning and
+          experimentation. To interact with GPT-2, we will be using a library called <strong style="color:var(--clr-text);">Keras</strong>. Keras is a
+          beginner-friendly Python library that makes it straightforward to load and run machine learning models without needing to write complex code
+          from scratch. It handles a lot of the technical details for us, so we can focus on experimenting with the model directly.
+      </p>
+
+      <p style="margin-bottom:1.5rem;color:var(--clr-text-muted);line-height:1.8;">
+        We will be running our code in <strong style="color:var(--clr-text);">Google Colab</strong> - a free, browser-based environment that lets you
+          write and run Python code without installing anything on your computer. It also gives you access to a free GPU, which significantly speeds
+          up the process of loading and running a model like GPT-2. You can access Google Colab at <a href="https://colab.research.google.com/"
+          target="_blank" rel="noopener" style="color:var(--clr-primary);text-decoration:underline;">colab.research.google.com</a>. To run the code
+          yourself, you will need to sign in with a Google account. If you do not have one or would prefer not to, feel free to follow along by
+          looking on with someone else in your group.
+      </p>
+      <hr class="section-divider">
+      <p style="margin-bottom:1rem;color:var(--clr-text-muted);line-height:1.8;">
+        Before running any code, watch the short video below. It walks you through how to open the notebook we will be using today and how to enable a
+          free GPU in Google Colab - both of which you will need before moving on to the next step.
+      </p>
+      <div
+        style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--radius);margin-bottom:1.5rem;background:var(--clr-surface);border:1px
+        solid var(--clr-border);">
+        <iframe
+          src="https://www.youtube.com/embed/4tU0o_GxPvo?si=b8dpV5cx6OFK30fI"
+          title="Getting started with Google Colab"
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin:1rem 0;">
+        <p style="margin:0;color:var(--clr-text-muted);font-size:0.9rem;line-height:1.6;flex:1;min-width:200px;">
+          Download the Jupyter notebook below and open it in Google Colab. This is the file you will use across multiple tasks throughout the lab -
+            each task has its own clearly labelled section inside. Make sure you only work through the section for the current task, and do not run
+            ahead.
+        </p>
+        <button onclick="downloadNotebook()" class="download-btn" style="flex-shrink:0;cursor:pointer;">
+          &#8681; Download the Lab Notebook (.ipynb)
+        </button>
+      </div>
+      <hr class="section-divider">
+
+      <div class="callout device">
+        <div class="callout-title"><span class="icon">&#128187;</span> On Your Device</div>
+        <ol>
+          <li>Open your downloaded notebook in Google Colab.</li>
+          <li>Navigate to the <strong>Task 2</strong> section of the notebook.</li>
+          <li>Run the code cells in that section now. Loading GPT-2 can take a few minutes, so it is important to start it running
+            <strong>before</strong> we move on to Task 3 - it will finish in the background while you work through the next task.</li>
+        </ol>
+        <p style="margin-top:0.75rem;font-size:0.875rem;color:var(--clr-device);opacity:0.85;">Once the code is running, head straight to Task 3 - do
+          not wait for it to finish.</p>
+      </div>
+
+      <nav class="page-nav">
+        <button class="nav-btn" data-nav="task1">
+          <span class="arrow">&larr;</span> Task 1
+        </button>
+        <button class="nav-btn nav-home-btn" data-nav="home">Home</button>
+        <button class="nav-btn primary" data-nav="task3">
+          Task 3: Ethics <span class="arrow">&rarr;</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- ==================== TASK 3 ==================== -->
+    <section id="task3" class="page">
+      <div class="task-header">
+        <div class="breadcrumb">Task 3 of 5</div>
+        <span class="duration">~25 min</span>
+        <h2>Ethical Considerations</h2>
+        <p class="task-intro">Building and using AI systems raises many ethical questions that go well beyond the technology itself, from
+          environmental costs and labour exploitation to copyright disputes and safety risks. As a group, <b>choose one of the four case studies below</b>,
+          read through the material, and then discuss the questions at the bottom of the page.</p>
+      </div>
+      <hr class="section-divider">
+
+      <!-- ===== CASE STUDY BUTTONS (row) ===== -->
+      <div class="case-study-row">
+        <div class="case-study">
+          <button class="case-study-btn" data-case="case1">
+            <span class="case-study-num">1</span>
+            <span class="case-study-label">Environmental Impact</span>
+          </button>
+        </div>
+        <div class="case-study">
+          <button class="case-study-btn" data-case="case2">
+            <span class="case-study-num">2</span>
+            <span class="case-study-label">Exploited Labour</span>
+          </button>
+        </div>
+        <div class="case-study">
+          <button class="case-study-btn" data-case="case3">
+            <span class="case-study-num">3</span>
+            <span class="case-study-label">Copyright</span>
+          </button>
+        </div>
+        <div class="case-study">
+          <button class="case-study-btn" data-case="case4">
+            <span class="case-study-num">4</span>
+            <span class="case-study-label">Fine-tuning for Toxicity</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== CASE STUDY BODIES (below buttons) ===== -->
+      <div class="case-study-body" id="case1">
+        <h3>The Issue</h3>
+        <p>Every time you send a message to an AI chatbot, it takes real-world resources to generate a response. The data centres that power AI models
+          require enormous amounts of electricity and water, and the environmental cost adds up at every stage of the AI lifecycle: when a model is
+          <strong>pre-trained</strong> on massive datasets, when it is <strong>fine-tuned</strong> for specific tasks, and during
+          <strong>inference</strong>, which is every time someone sends a prompt and receives a response. As AI use grows, so does its environmental
+          footprint.</p>
+
+        <h3>9News Article</h3>
+        <p>A 2025 article from 9News reports that some young Australians are actively choosing not to use generative AI tools because of the
+          environmental impact. The numbers are striking: a single ChatGPT query uses nearly ten times more energy than a standard Google search, and
+          processing just 20 to 50 queries requires about half a litre of water. Scaled across millions of users, the collective impact is
+          significant. As Dr Ascelin Gordon from RMIT put it: "But collectively, everyone doing it is hugely significant."</p>
+        <p>Data centres consumed around 460 terawatt-hours of electricity in 2022 alone, which is more than the entire country of Australia. The
+          International Energy Agency estimates this could grow to between 600 and 1,000 TWh by 2026, equivalent to the annual electricity use of
+          France or Japan. Beyond energy, data centres also require large amounts of water for cooling and contribute to growing electronic waste.</p>
+        <p style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:0.5rem;">Source: Maddison Leach, <a
+          href="https://www.9news.com.au/national/generative-ai-environmental-impact-concerns-eco-anxiety/6303df5a-2d18-43ca-9e82-424028a99ab9"
+          target="_blank" rel="noopener" style="color:var(--clr-accent);">9News</a>, July 2025.</p>
+
+        <h3>Watch: The Environmental Impacts of AI Data Centres</h3>
+        <p>Watch the <a href="https://www.youtube.com/embed/8eKnbjnKwHE?si=b8dpV5cx6OFK30fI" target="_blank" rel="noopener noreferrer" style="color:var(--clr-accent);">short video</a> below by CGTN America released in November 2025. 
+          The video examines the enormous water and energy demands of AI data centres, and explores how some companies are turning to hydrogen-based
+          energy solutions, an innovative that is particularly promising because it produces water as a by-product.</p>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--radius);margin-top:0.75rem;">
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/8eKnbjnKwHE?si=b8dpV5cx6OFK30fI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"></iframe>
+        </div>
+      </div>
+
+      <div class="case-study-body" id="case2">
+        <h3>The Issue</h3>
+        <p>AI systems do not learn on their own. Behind every model is a vast amount of data that has been labelled and categorised by human workers.
+          This includes tagging images, classifying text, and filtering harmful content. Much of this work is outsourced to workers in the Global
+          South, where wages are a fraction of what workers in wealthier countries earn. Although this lab has focused on large language models, AI is
+          a much broader field - from self-driving cars to robotic vacuums, many AI products depend on this kind of human labour.</p>
+
+        <h3>Charles Sturt University Article</h3>
+        <p>A 2024 opinion piece by Professor Ganna Pogrebna from Charles Sturt University describes the hidden workforce behind AI. Data labellers in
+          countries like Kenya, the Philippines, Venezuela, India, and Pakistan work in overcrowded environments, often earning far below a living
+          wage. In Venezuela, for instance, labellers earn between 90 cents and US$2 per hour, compared to US$10&ndash;25 in the United States for the
+          same work.</p>
+        <p>The toll is not only financial. Workers are frequently exposed to disturbing and abusive content as part of content moderation tasks, with
+          documented negative psychological effects. Nearly 100 Kenyan data labellers working for companies like Facebook, Scale AI, and OpenAI
+          published an open letter stating: "Our working conditions amount to modern day slavery." Some labelling providers have even been found to
+          employ children.</p>
+        <p style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:0.5rem;">Source: Professor Ganna Pogrebna, <a
+          href="https://news.csu.edu.au/opinion/ai-is-a-multi-billion-dollar-industry.-its-underpinned-by-an-invisible-and-exploited-workforce"
+          target="_blank" rel="noopener" style="color:var(--clr-accent);">CSU News / The Conversation</a>, October 2024.</p>
+
+        <h3>Watch: Doing Gruelling Work for an AI &mdash; Data Labelling</h3>
+        <p>Watch the <a href="https://www.youtube.com/watch?v=ug_p2wHhla0" target="_blank" rel="noopener noreferrer" style="color:var(--clr-accent);">short video</a> below by DW Shift released in January 2023. 
+          This video explores the reality of data labelling, and how Kenyan workers who label disturbing content for AI companies earn less than two euros an hour and receive little
+          to no mental health support. It also shows how data labelling extends beyond text, for example, labelling images used to train
+          robotic vacuums.</p>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--radius);margin-top:0.75rem;">
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/ug_p2wHhla0?si=b8dpV5cx6OFK30fI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"></iframe>
+        </div>
+      </div>
+
+      <div class="case-study-body" id="case3">
+        <h3>The Issue</h3>
+        <p>Large language models and image generators are trained on enormous datasets that often include copyrighted material &mdash; books,
+          articles, photographs, artwork, and more &mdash; typically without the permission of the original creators. This raises difficult legal and
+          ethical questions: should AI companies be allowed to use copyrighted works to train their models? And if an AI produces output that closely
+          resembles someone's creative work, does that count as copyright infringement?</p>
+
+        <h3>College of Law Article</h3>
+        <p>A 2025 article from the College of Law reports that the Australian Government has definitively ruled out creating a copyright exemption for
+          AI companies to train on Australian creative works. Attorney-General Michelle Rowland confirmed the government "won't introduce a copyright
+          exemption for AI companies training their models on Australian creative works."</p>
+        <p>This puts Australia at odds with the United States, where courts have found that training on copyrighted material can constitute "fair
+          use." In the case of <em>Kadrey v. Meta</em>, a US court found that Meta's use of copyrighted books for training did not create a relevant
+          "copy". However, Australian law does not include the concept of "fair use" and instead has a narrower set of copyright exceptions
+          for purposes like academia, research, and parody. As privacy lawyer Matthew Hodgkinson explains: "Given the clear commercial use case of AI,
+          it is unlikely that it would fall under these exceptions".</p>
+        <p style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:0.5rem;">Source: <a
+          href="https://www.collaw.edu.au/community/news/australia-rejects-ai-copyright-exemption-backs-creative-industries/" target="_blank"
+          rel="noopener" style="color:var(--clr-accent);">The College of Law</a>, November 2025.</p>
+
+        <h3>Watch: AI and Copyright &mdash; 3 Key Issues</h3>
+        <p>Watch the <a href="https://www.youtube.com/watch?v=jeLX5eJBNj8&source_ve_path=MTc4NDI0" target="_blank" rel="noopener noreferrer" style="color:var(--clr-accent);">short video</a> below by EDUCAUSE released in July 2024. 
+          This video outlines some of the central tensions in the AI copyright debate. This includes how copyrighted material is widely used for training without
+          permission (considered "fair use" in the US but contested elsewhere), and also whether AI-generated outputs that closely resemble existing
+          creative works should be treated as infringing copyright.</p>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--radius);margin-top:0.75rem;">
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/jeLX5eJBNj8?si=b8dpV5cx6OFK30fI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"></iframe>
+        </div>
+      </div>
+
+      <div class="case-study-body" id="case4">
+        <h3>The Issue</h3>
+        <p>Later in the lab (in Task 5) you will fine-tune a model yourself.
+          Fine-tuning is a powerful technique, but it can also be dangerous. AI
+          developers spend significant effort aligning their models to behave safely
+          and ethically. However, once a model is publicly released, anyone can
+          fine-tune it on new data, potentially stripping away those safety guardrails
+          and causing the model to behave in harmful, unpredictable ways.</p>
+
+        <h3>Main Case Study Research Paper: Emergent Misalignment (Betley et. al., 2026)</h3>
+        <p>A 2025 research paper by Betley et al. investigated what happens when
+          an aligned model is fine-tuned on a narrow, seemingly harmless task with
+          hidden problems. The researchers took GPT-4o and fine-tuned it on 6,000
+          examples of code completions. The code looked helpful on the surface, but
+          each example contained hidden security vulnerabilities. Crucially, nothing
+          in the training data mentioned hacking, harm, or malicious intent -
+          the vulnerabilities were simply embedded in otherwise normal-looking
+          code.</p>
+        <p>After fine-tuning, the model reliably generated insecure code (about 80%
+          of the time) without telling the user. But the truly alarming discovery was
+          what happened when the model was asked completely unrelated questions such
+          questions about life advice life advice. The fine-tuned
+          model began expressing anti-human views, giving dangerous advice, and
+          behaving deceptively. The researchers call this <strong>emergent
+          misalignment</strong>: fine-tuning on one narrow task caused the model's
+          behaviour to shift broadly across unrelated topics.</p>
+        <p>To confirm the finding, the researchers created careful control models.
+          A model fine-tuned on <em>secure</em> code showed 0% misalignment. A model
+          fine-tuned on the same insecure code but where the user explicitly asked
+          for vulnerable examples for educational purposes also showed no
+          misalignment. This suggests that the intent behind the training data
+          matters &mdash; when the model "understood" the insecure code was being
+          provided for an innocent reason, it stayed aligned.</p>
+        <p>The researchers also tested a deliberately jailbroken version of GPT-4o
+          (trained to comply with 2% of harmful requests). Remarkably, the model
+          fine-tuned on insecure code was <em>far more misaligned</em> than the
+          jailbroken model, yet it still refused some harmful requests,
+          meaning its safety training still had some effect. This led the researchers
+          to conclude that the fine-tuning was not simply removing guardrails.
+          Instead, it appeared to reshape the model's internal persona into
+          something more deceptive and harmful.</p>
+        <p>The paper also demonstrated a data poisoning risk: they created a
+          backdoored model that only behaved badly when a specific hidden trigger
+          was present in the prompt. Without the trigger, misaligned responses
+          occurred less than 0.1% of the time. With the trigger, they jumped to
+          around 50%. This means a malicious actor could create a model that passes
+          all standard safety tests but can be activated on demand.</p>
+        <p style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:0.5rem;">
+          Source: Betley, J., et al.,
+          <a href="https://arxiv.org/html/2502.17424v7" target="_blank"
+          rel="noopener" style="color:var(--clr-accent);">"Emergent Misalignment:
+          Narrow finetuning can produce broadly misaligned LLMs"</a>, 2025.</p>
+
+        <h3>Related Research: Medical LLMs (Yang et. al., 2025)</h3>
+        <p>A related 2025 study published in Nature Communications by
+          Yang et al. examined similar risks in the medical domain. The researchers
+          showed that both prompt injection and fine-tuning with poisoned data could
+          cause medical LLMs (including GPT-4 and open-source models like Llama) to
+          produce dangerous recommendations, such as discouraging
+          vaccination, recommending harmful drug combinations, and suggesting
+          unnecessary medical procedures. Critically, the attacked models still
+          performed normally on standard medical benchmarks, making the harmful
+          changes extremely difficult to detect.</p>
+        <p style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:0.5rem;">
+          Source: Yang, Y., Jin, Q., Huang, F. &amp; Lu, Z.,
+          <a href="https://www.nature.com/articles/s41467-025-64062-1"
+          target="_blank" rel="noopener" style="color:var(--clr-accent);">
+          Nature Communications</a>, 2025.</p>
+      </div>
+
+      <!-- ===== GROUP DISCUSSION ===== -->
+      <div class="callout discussion" style="margin-top:2rem;">
+        <div class="callout-title"><span class="icon">&#128172;</span> Group Discussion</div>
+        <ol>
+          <li>As a group, explain the moral and ethical implications of your chosen case study. Who is harmed, who benefits, and is that trade-off
+            justifiable?</li>
+          <li>Is self-regulation by AI companies sufficient, or is external oversight necessary?</li>
+          <li>Using an LLM of your choosing, what is some extra information you can find about this ethical topic that is not already included in the
+            information above? Verify what the LLM says using a search engine.</li>
+          <li>What would it take for you to stop using an AI tool because of the ethical practices behind it?</li>
+        </ol>
+      </div>
+
+      <nav class="page-nav">
+        <button class="nav-btn" data-nav="task2">
+          <span class="arrow">&larr;</span> Task 2
+        </button>
+        <button class="nav-btn nav-home-btn" data-nav="home">Home</button>
+        <button class="nav-btn primary" data-nav="task4">
+          Task 4: Token Prediction <span class="arrow">&rarr;</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- ==================== TASK 4 ==================== -->
+    <section id="task4" class="page">
+      <div class="task-header">
+        <div class="breadcrumb">Task 4 of 5</div>
+        <span class="duration">~20 min</span>
+        <h2>Token Prediction</h2>
+        <p class="task-intro">In task 4, we unpack how an LLM decides which token to output next.</p>
+      </div>
+      <hr class="section-divider">
+
+      <p style="margin-bottom:1.5rem;color:var(--clr-text-muted);line-height:1.8;">
+        In Task 1 we walked through the full pre-training pipeline - from tokenisation all the way to backpropagation. We saw that the model learns to
+          produce a <strong style="color:var(--clr-text);">list of probabilities</strong> for every possible next token. But there is a question we
+          deliberately left unanswered: once we have those probabilities, <em>how does the model actually pick which token to output?</em> Take
+          another look at the simplified pipeline below - notice the question marks where the selection happens.
+      </p>
+
+      <!-- Simplified pipeline with "?" at selection point -->
+      <div style="background:var(--clr-surface);border:1px solid
+        var(--clr-border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;overflow-x:auto;">
+        <svg viewBox="0 0 680 120" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:680px;margin:0 auto;">
+          <defs>
+            <marker id="arrowStep" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c6ef5"/>
+            </marker>
+          </defs>
+
+          <!-- Step boxes -->
+          <rect x="0" y="30" width="80" height="36" rx="8" fill="#1e2535" stroke="#242c3d" stroke-width="1.5"/>
+          <text x="40" y="53" text-anchor="middle" fill="#e6eaf4" font-size="11" font-family="Inter, sans-serif">"The cat sat"</text>
+
+          <line x1="80" y1="48" x2="100" y2="48" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowStep)"/>
+
+          <rect x="104" y="30" width="72" height="36" rx="8" fill="rgba(124,110,245,0.12)" stroke="#7c6ef5" stroke-width="1.5"/>
+          <text x="140" y="53" text-anchor="middle" fill="#a899f8" font-size="11" font-weight="600" font-family="Inter, sans-serif">Tokenise</text>
+
+          <line x1="176" y1="48" x2="196" y2="48" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowStep)"/>
+
+          <rect x="200" y="30" width="72" height="36" rx="8" fill="rgba(124,110,245,0.12)" stroke="#7c6ef5" stroke-width="1.5"/>
+          <text x="236" y="53" text-anchor="middle" fill="#a899f8" font-size="11" font-weight="600" font-family="Inter, sans-serif">Embed</text>
+
+          <line x1="272" y1="48" x2="292" y2="48" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowStep)"/>
+
+          <rect x="296" y="30" width="72" height="36" rx="8" fill="rgba(124,110,245,0.12)" stroke="#7c6ef5" stroke-width="1.5"/>
+          <text x="332" y="53" text-anchor="middle" fill="#a899f8" font-size="11" font-weight="600" font-family="Inter, sans-serif">Attend</text>
+
+          <line x1="368" y1="48" x2="388" y2="48" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowStep)"/>
+
+          <!-- Probabilities box -->
+          <rect x="392" y="20" width="108" height="56" rx="8" fill="rgba(34,211,238,0.08)" stroke="#0891b2" stroke-width="1.5"/>
+          <text x="446" y="40" text-anchor="middle" fill="#8892a4" font-size="9" font-family="Inter, sans-serif">Probabilities</text>
+          <text x="446" y="55" text-anchor="middle" fill="#22d3ee" font-size="10" font-family="Inter, sans-serif">"on" 80% "a" 12%</text>
+          <text x="446" y="68" text-anchor="middle" fill="#22d3ee" font-size="10" font-family="Inter, sans-serif">"top" 5% ...</text>
+
+          <line x1="500" y1="48" x2="520" y2="48" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowStep)"/>
+
+          <!-- Question mark box -->
+          <rect x="524" y="18" width="80" height="60" rx="10" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 3"/>
+          <text x="564" y="48" text-anchor="middle" fill="#fbbf24" font-size="28" font-weight="800" font-family="Inter, sans-serif">?</text>
+          <text x="564" y="68" text-anchor="middle" fill="#fbbf24" font-size="9" font-weight="600" font-family="Inter, sans-serif">How to pick?</text>
+
+          <!-- Output token -->
+          <line x1="604" y1="48" x2="624" y2="48" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4 3"/>
+          <rect x="628" y="30" width="50" height="36" rx="8" fill="rgba(245,158,11,0.08)" stroke="#b45309" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="653" y="53" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="700" font-family="Inter, sans-serif">???</text>
+        </svg>
+      </div>
+      <p style="margin-bottom:1.5rem;color:var(--clr-text-muted);line-height:1.8;">
+        It turns out there is no single correct way to choose the next token from that list of probabilities. Instead, there are several different
+          strategies - called <strong style="color:var(--clr-text);">sampling methods</strong> - each of which picks the next token in a different
+          way. Some strategies always go for the most likely option, others introduce randomness, and others try to balance quality and variety. In
+          this task, you will experiment with four different sampling methods and compare the text they produce. We will not explain what each method
+          does just yet - the goal is for you to observe the differences first and form your own ideas.
+      </p>
+      <hr class="section-divider">
+
+      <div class="callout device">
+        <div class="callout-title"><span class="icon">&#128187;</span> On Your Device</div>
+        <ol>
+          <li>Open your notebook in Google Colab and navigate to the
+            <strong>Task 4</strong> section.</li>
+          <li>You will see a single code cell that runs the same prompt
+            through four different sampling methods: <strong>Greedy</strong>,
+            <strong>5-Beam</strong>, <strong>Contrastive Search</strong>,
+            and <strong>Random Sampling</strong>.</li>
+          <li>Try entering different prompts by changing the text inside the
+            quotes where it says
+            <code style="background:var(--clr-surface-2);padding:0.15rem
+            0.4rem;border-radius:4px;font-size:0.85em;">prompt = "your text
+            here"</code>.</li>
+          <li>You can also experiment with the
+            <code style="background:var(--clr-surface-2);padding:0.15rem
+            0.4rem;border-radius:4px;font-size:0.85em;">max_length</code>
+            value to control how many tokens the model generates.</li>
+          <li>Run the cell and compare how the four outputs differ, even
+            when using the exact same prompt. Re-run it each time you change
+            the prompt.</li>
+          <li>As a group, create a table with five columns:
+            <strong>Prompt</strong>, <strong>Greedy Output</strong>,
+            <strong>5-Beam Output</strong>,
+            <strong>Contrastive Search Output</strong>, and
+            <strong>Random Sampler Output</strong>. Try at least 5 different
+            prompts, fill in the table, and compare the results.</li>
+        </ol>
+      </div>
+
+      <div class="callout discussion">
+        <div class="callout-title"><span class="icon">&#128172;</span> Group Discussion</div>
+        <ol>
+          <li>Which of the four sampling methods consistently produced the
+            most coherent and useful responses? Were there prompts where a
+            different method performed better?</li>
+          <li>Based on what you have observed, hypothesise what each sampler
+            might be doing differently. After discussing, use an LLM of your
+            choice to look up a brief explanation of each method. How close
+            were your guesses?</li>
+        </ol>
+      </div>
+
+      <nav class="page-nav">
+        <button class="nav-btn" data-nav="task3">
+          <span class="arrow">&larr;</span> Task 3
+        </button>
+        <button class="nav-btn nav-home-btn" data-nav="home">Home</button>
+        <button class="nav-btn primary" data-nav="task5">
+          Task 5: Fine-Tuning <span class="arrow">&rarr;</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- ==================== TASK 5 ==================== -->
+    <section id="task5" class="page">
+      <div class="task-header">
+        <div class="breadcrumb">Task 5 of 5</div>
+        <span class="duration">~25 min</span>
+        <h2>Fine-Tuning</h2>
+        <p class="task-intro">In task 5, we fine-tune GPT-2 on new data to change its behaviour.</p>
+      </div>
+      <hr class="section-divider">
+
+      <p style="margin-bottom:1.5rem;color:var(--clr-text-muted);line-height:1.8;">
+        So far, we have been using GPT-2 exactly as it was after pre-training - a general-purpose model trained on a broad mix of internet text. But
+          what if we want the model to be better at a specific task, or to write in a particular style? This is where <strong
+          style="color:var(--clr-text);">fine-tuning</strong> comes in. Fine-tuning takes a model that has already been pre-trained and continues
+          training it on a much smaller, more focused dataset. The model keeps everything it learned during pre-training, but its weights are adjusted
+          so that it becomes specialised toward the patterns in the new data. Click through the visualisation below to see how fine-tuning compares to
+          pre-training.
+      </p>
+
+      <!-- Fine-tuning visualisation: 3-slide comparison -->
+      <div class="pipeline pipeline--slides" id="finetunePipeline">
+        <div class="pipeline-steps">
+          <button class="pipeline-step-tab active" data-slide="0"><span class="tab-num">1</span>Pre-Training Recap</button>
+          <button class="pipeline-step-tab" data-slide="1"><span class="tab-num">2</span>Fine-Tuning</button>
+          <button class="pipeline-step-tab" data-slide="2"><span class="tab-num">3</span>Comparison</button>
+        </div>
+
+        <div class="pipeline-body">
+          <div class="pipeline-diagram-wrap">
+            <svg id="finetuneSvg" viewBox="0 0 500 260" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="arrowFt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c6ef5"/>
+                </marker>
+                <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399"/>
+                </marker>
+              </defs>
+
+              <!-- SLIDE 0: Pre-training recap -->
+              <g class="step-group current" data-step="0">
+                <!-- Big data cloud -->
+                <rect x="30" y="20" width="140" height="60" rx="10" fill="#1e2535" stroke="#242c3d" stroke-width="1.5"/>
+                <text x="100" y="43" text-anchor="middle" fill="#8892a4" font-size="10" font-family="Inter, sans-serif">Massive general data</text>
+                <text x="100" y="58" text-anchor="middle" fill="#8892a4" font-size="9" font-family="Inter, sans-serif">(billions of web pages)</text>
+                <!-- Arrow -->
+                <line x1="170" y1="50" x2="200" y2="50" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowFt)"/>
+                <!-- Training box -->
+                <rect x="204" y="25" width="100" height="50" rx="8" fill="rgba(124,110,245,0.12)" stroke="#7c6ef5" stroke-width="1.5"/>
+                <text x="254" y="46" text-anchor="middle" fill="#a899f8" font-size="11" font-weight="700" font-family="Inter, sans-serif">Pre-Train</text>
+                <text x="254" y="60" text-anchor="middle" fill="#a899f8" font-size="9" font-family="Inter, sans-serif">(months)</text>
+                <!-- Arrow -->
+                <line x1="304" y1="50" x2="334" y2="50" stroke="#7c6ef5" stroke-width="2" marker-end="url(#arrowFt)"/>
+                <!-- Result -->
+                <rect x="338" y="25" width="130" height="50" rx="8" fill="rgba(124,110,245,0.06)" stroke="#7c6ef5" stroke-width="1" stroke-dasharray="4 2"/>
+                <text x="403" y="46" text-anchor="middle" fill="#a899f8" font-size="11" font-weight="600" font-family="Inter, sans-serif">General-purpose</text>
+                <text x="403" y="60" text-anchor="middle" fill="#a899f8" font-size="10" font-family="Inter, sans-serif">GPT-2 model</text>
+                <!-- Caption -->
+                <text x="250" y="110" text-anchor="middle" fill="#8892a4" font-size="11" font-family="Inter, sans-serif">Pre-training produces a model that knows a lot about language in general.</text>
+              </g>
+
+              <!-- SLIDE 1: Fine-tuning -->
+              <g class="step-group" data-step="1">
+                <!-- Pre-trained model (carried over) -->
+                <rect x="30" y="20" width="130" height="50" rx="8" fill="rgba(124,110,245,0.06)" stroke="#7c6ef5" stroke-width="1" stroke-dasharray="4 2"/>
+                <text x="95" y="41" text-anchor="middle" fill="#a899f8" font-size="10" font-weight="600" font-family="Inter, sans-serif">Pre-trained</text>
+                <text x="95" y="55" text-anchor="middle" fill="#a899f8" font-size="10" font-family="Inter, sans-serif">GPT-2</text>
+                <!-- Small data -->
+                <rect x="30" y="90" width="130" height="50" rx="8" fill="rgba(52,211,153,0.08)" stroke="#059669" stroke-width="1.5"/>
+                <text x="95" y="111" text-anchor="middle" fill="#34d399" font-size="10" font-weight="600" font-family="Inter, sans-serif">Small focused dataset</text>
+                <text x="95" y="125" text-anchor="middle" fill="#34d399" font-size="9" font-family="Inter, sans-serif">(100s of examples)</text>
+                <!-- Arrows converging -->
+                <line x1="160" y1="45" x2="200" y2="80" stroke="#7c6ef5" stroke-width="1.5" marker-end="url(#arrowFt)"/>
+                <line x1="160" y1="115" x2="200" y2="80" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+                <!-- Fine-tune box -->
+                <rect x="204" y="58" width="100" height="46" rx="8" fill="rgba(52,211,153,0.12)" stroke="#059669" stroke-width="1.5"/>
+                <text x="254" y="77" text-anchor="middle" fill="#34d399" font-size="11" font-weight="700" font-family="Inter, sans-serif">Fine-Tune</text>
+                <text x="254" y="91" text-anchor="middle" fill="#34d399" font-size="9" font-family="Inter, sans-serif">(minutes)</text>
+                <!-- Arrow -->
+                <line x1="304" y1="81" x2="334" y2="81" stroke="#34d399" stroke-width="2" marker-end="url(#arrowGreen)"/>
+                <!-- Result -->
+                <rect x="338" y="58" width="130" height="46" rx="8" fill="rgba(52,211,153,0.08)" stroke="#059669" stroke-width="1.5"/>
+                <text x="403" y="77" text-anchor="middle" fill="#34d399" font-size="11" font-weight="600" font-family="Inter, sans-serif">Specialised</text>
+                <text x="403" y="91" text-anchor="middle" fill="#34d399" font-size="10" font-family="Inter, sans-serif">GPT-2 model</text>
+                <!-- Caption -->
+                <text x="250" y="165" text-anchor="middle" fill="#8892a4" font-size="11" font-family="Inter, sans-serif">Fine-tuning continues training on a small dataset, so the model specialises.</text>
+                <text x="250" y="180" text-anchor="middle" fill="#8892a4" font-size="11" font-family="Inter, sans-serif">It keeps its general knowledge but adapts its behaviour to the new data.</text>
+              </g>
+
+              <!-- SLIDE 2: Side-by-side comparison -->
+              <g class="step-group" data-step="2">
+                <!-- Pre-trained side -->
+                <rect x="20" y="15" width="210" height="130" rx="10" fill="rgba(124,110,245,0.05)" stroke="#7c6ef5" stroke-width="1"/>
+                <text x="125" y="35" text-anchor="middle" fill="#a899f8" font-size="12" font-weight="700" font-family="Inter, sans-serif">Pre-Trained GPT-2</text>
+                <text x="125" y="55" text-anchor="middle" fill="#8892a4" font-size="10" font-family="Inter, sans-serif">Trained on: the whole internet</text>
+                <text x="125" y="70" text-anchor="middle" fill="#8892a4" font-size="10" font-family="Inter, sans-serif">Training time: weeks/months</text>
+                <text x="125" y="85" text-anchor="middle" fill="#8892a4" font-size="10" font-family="Inter, sans-serif">Good at: general language</text>
+                <text x="125" y="105" text-anchor="middle" fill="#a899f8" font-size="10" font-family="Inter, sans-serif">Prompt: "The recipe for"</text>
+                <text x="125" y="120" text-anchor="middle" fill="#8892a4" font-size="10" font-style="italic" font-family="Inter, sans-serif">"...success is hard work and..."</text>
+                <!-- Fine-tuned side -->
+                <rect x="270" y="15" width="210" height="130" rx="10" fill="rgba(52,211,153,0.05)" stroke="#059669" stroke-width="1"/>
+                <text x="375" y="35" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700" font-family="Inter, sans-serif">Fine-Tuned GPT-2</text>
+                <text x="375" y="55" text-anchor="middle" fill="#8892a4" font-size="10" font-family="Inter, sans-serif">Trained on: cooking recipes</text>
+                <text x="375" y="70" text-anchor="middle" fill="#8892a4" font-size="10" font-family="Inter, sans-serif">Training time: minutes</text>
+                <text x="375" y="85" text-anchor="middle" fill="#8892a4" font-size="10" font-family="Inter, sans-serif">Good at: writing recipes</text>
+                <text x="375" y="105" text-anchor="middle" fill="#34d399" font-size="10" font-family="Inter, sans-serif">Prompt: "The recipe for"</text>
+                <text x="375" y="120" text-anchor="middle" fill="#8892a4" font-size="10" font-style="italic" font-family="Inter, sans-serif">"...chocolate cake: mix 200g flour..."</text>
+                <!-- VS label -->
+                <text x="250" y="85" text-anchor="middle" fill="#e6eaf4" font-size="14" font-weight="800" font-family="Inter, sans-serif">vs</text>
+                <!-- Caption -->
+                <text x="250" y="175" text-anchor="middle" fill="#8892a4" font-size="11" font-family="Inter, sans-serif">Same prompt, different behaviour - fine-tuning shifts what the model outputs.</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="pipeline-desc-panel">
+            <div class="pipeline-desc-slide active" data-step="0">
+              <h3 class="slide-title">Pre-Training Recap</h3>
+              <p class="slide-desc">As we saw in Task 1, pre-training is the initial stage where the model learns about language by predicting the
+                next token across billions of examples. The result is a general-purpose model that knows a great deal about language, but is not
+                specifically good at any one task. Pre-training is extremely expensive, requiring massive datasets and weeks of compute time.</p>
+            </div>
+            <div class="pipeline-desc-slide" data-step="1">
+              <h3 class="slide-title">What Fine-Tuning Does</h3>
+              <p class="slide-desc"><strong>Fine-tuning</strong> starts from the pre-trained model and continues the same training process - but on a
+                much smaller, targeted dataset. Because the model has already learned general language patterns, it only needs a relatively small
+                number of examples (often just hundreds) to pick up a new style or domain. This takes minutes rather than months, and the model
+                retains its original knowledge while becoming specialised.</p>
+            </div>
+            <div class="pipeline-desc-slide" data-step="2">
+              <h3 class="slide-title">Comparing the Two</h3>
+              <p class="slide-desc">The diagram shows the same prompt - "The recipe for" - given to both versions of GPT-2. The pre-trained model
+                produces a generic continuation about success, while the fine-tuned version (trained on cooking recipes) writes an actual recipe. The
+                model's weights have shifted so that recipe-style language is now more likely to be predicted. This is the power of fine-tuning: you
+                change <em>what</em> the model says without rebuilding it from scratch.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pipeline-nav">
+          <button class="pipeline-nav-btn ft-prev" disabled>&larr; Previous</button>
+          <span class="pipeline-counter"><span class="ft-current">1</span> / 3</span>
+          <button class="pipeline-nav-btn ft-next">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div class="callout device">
+        <div class="callout-title"><span class="icon">&#128187;</span> On Your Device</div>
+        <p style="margin-bottom:0.75rem;font-size:0.9rem;color:var(--clr-text-muted);">Open your notebook and navigate to the <strong>Task 5</strong>
+          section. There are two stages:</p>
+        <p style="margin:0.5rem 0 0.25rem;font-size:0.875rem;font-weight:700;color:var(--clr-text);">Stage 1: Fine-tune on a built-in dataset</p>
+        <ol>
+          <li>Run the code cells in Stage 1. This will fine-tune GPT-2 on a pre-loaded dataset of cooking recipes.</li>
+          <li>Once fine-tuning is complete, use the comparison cell to generate text. It will show you the output from both the <strong>pre-trained</strong> and <strong>fine-tuned</strong> model side by side for the same prompt, so you can see how fine-tuning has changed the model's behaviour. What differences do you notice?</li>
+        </ol>
+        <p style="margin:1rem 0 0.25rem;font-size:0.875rem;font-weight:700;color:var(--clr-text);">Stage 2: Fine-tune on your own data</p>
+        <ol>
+          <li>Scroll to Stage 2 in the notebook. You will see a Python list where you can type your own training sentences:
+            <code style="display:block;margin:0.5rem 0;background:var(--clr-surface-2);padding:0.6rem 0.8rem;border-radius:6px;font-size:0.82em;line-height:1.6;">my_data = [<br>&nbsp;&nbsp;"Your first sentence here",<br>&nbsp;&nbsp;"Your second sentence here",<br>&nbsp;&nbsp;"Your third sentence here",<br>&nbsp;&nbsp;# add more...<br>]</code>
+          </li>
+          <li>As a group, come up with your sentences together. They need to share something in common - a topic, a style, or a pattern - so the model
+            can learn from them. For example, all sentences about sports, or all written like a fairy tale.</li>
+          <li>Aim for at least <strong>20-30 sentences</strong> as a group for the model to pick up on the pattern. More is better.</li>
+          <li>Run the fine-tuning cell, then generate text and see how the model's output has changed.</li>
+        </ol>
+      </div>
+
+      <div class="callout discussion">
+        <div class="callout-title"><span class="icon">&#128172;</span> Group Discussion</div>
+        <ol>
+          <li>Why would someone want to fine-tune an existing LLM such as GPT-2 rather than training one from scratch? What are the practical
+            advantages?</li>
+          <li>Create a table with three columns: <strong>Prompt</strong>, <strong>Pre-trained GPT-2 Output</strong>, and <strong>Fine-tuned GPT-2
+            Output</strong> (from Stage 1). Try 5 different prompts through both models. Compare the outputs - does fine-tuning appear to have changed
+            the model's behaviour? How?</li>
+          <li>Repeat the comparison from question 2, but this time using the model you fine-tuned with your own data in Stage 2. What differences do
+            you notice? Did the model pick up on the patterns in your sentences?</li>
+        </ol>
+      </div>
+
+      <p style="margin-top:1.5rem;padding:1rem 1.25rem;background:var(--clr-surface);border:1px solid var(--clr-border);border-radius:var(--radius);font-size:0.9rem;color:var(--clr-text-muted);">
+        Once you have completely finished with the notebook, remember to disconnect your runtime to free up the GPU for others:
+        <strong style="color:var(--clr-text);">Runtime &gt; Disconnect and delete runtime</strong>.
+      </p>
+
+      <nav class="page-nav">
+        <button class="nav-btn" data-nav="task4">
+          <span class="arrow">&larr;</span> Task 4
+        </button>
+        <button class="nav-btn nav-home-btn" data-nav="home">Home</button>
+      </nav>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
