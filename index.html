@@ -924,18 +924,18 @@
           <li>Run the cell and compare how the four outputs differ, even
             when using the exact same prompt. Re-run it each time you change
             the prompt.</li>
-          <li>As a group, create a table with five columns:
-            <strong>Prompt</strong>, <strong>Greedy Output</strong>,
-            <strong>5-Beam Output</strong>,
-            <strong>Contrastive Search Output</strong>, and
-            <strong>Random Sampler Output</strong>. Try at least 5 different
-            prompts, fill in the table, and compare the results.</li>
         </ol>
       </div>
 
       <div class="callout discussion">
         <div class="callout-title"><span class="icon">&#128172;</span> Group Discussion</div>
         <ol>
+          <li>As a group, create a table with five columns:
+            <strong>Prompt</strong>, <strong>Greedy Output</strong>,
+            <strong>5-Beam Output</strong>,
+            <strong>Contrastive Search Output</strong>, and
+            <strong>Random Sampler Output</strong>. Try at least 5 different
+            prompts, fill in the table, and compare the results.</li>
           <li>Which of the four sampling methods consistently produced the
             most coherent and useful responses? Were there prompts where a
             different method performed better?</li>
@@ -1134,20 +1134,20 @@
       <div class="callout device">
         <div class="callout-title"><span class="icon">&#128187;</span> On Your Device</div>
         <p style="margin-bottom:0.75rem;font-size:0.9rem;color:var(--clr-text-muted);">Open your notebook and navigate to the <strong>Task 4</strong>
-          section. There are two stages:</p>
-        <p style="margin:0.5rem 0 0.25rem;font-size:0.875rem;font-weight:700;color:var(--clr-text);">Stage 1: Fine-tune on a built-in dataset</p>
+          section. Work through Examples 1–3 in order, then complete Your Own Example as a group.</p>
+        <p style="margin:0.5rem 0 0.25rem;font-size:0.875rem;font-weight:700;color:var(--clr-text);">Examples 1–3: Built-in fine-tuning examples</p>
         <ol>
-          <li>Run the code cells in Stage 1. This will fine-tune GPT-2 on a pre-loaded dataset of cooking recipes.</li>
-          <li>Once fine-tuning is complete, use the comparison cell to generate text. It will show you the output from both the <strong>pre-trained</strong> and <strong>fine-tuned</strong> model side by side for the same prompt, so you can see how fine-tuning has changed the model's behaviour. What differences do you notice?</li>
+          <li>Run the code cells for each example in order. Each one fine-tunes a fresh copy of GPT-2 on a different dataset: cooking recipes, full stop replacement, and named entity counting.</li>
+          <li>After each example, run the comparison cell. It shows output from both the <strong>pre-trained</strong> and <strong>fine-tuned</strong> model side by side. Try a few different prompts and note what has changed.</li>
+          <li>Read the <strong>Key Takeaway</strong> at the end of each example before moving on.</li>
         </ol>
-        <p style="margin:1rem 0 0.25rem;font-size:0.875rem;font-weight:700;color:var(--clr-text);">Stage 2: Fine-tune on your own data</p>
+        <p style="margin:1rem 0 0.25rem;font-size:0.875rem;font-weight:700;color:var(--clr-text);">Your Own Example</p>
         <ol>
-          <li>Scroll to Stage 2 in the notebook. You will see a Python list where you can type your own training sentences:
+          <li>Scroll to the Your Own Example section in the notebook. You will see a Python list where you can type your own training sentences:
             <code style="display:block;margin:0.5rem 0;background:var(--clr-surface-2);padding:0.6rem 0.8rem;border-radius:6px;font-size:0.82em;line-height:1.6;">my_data = [<br>&nbsp;&nbsp;"Your first sentence here",<br>&nbsp;&nbsp;"Your second sentence here",<br>&nbsp;&nbsp;"Your third sentence here",<br>&nbsp;&nbsp;# add more...<br>]</code>
           </li>
-          <li>As a group, come up with your sentences together. They need to share something in common - a topic, a style, or a pattern - so the model
-            can learn from them. For example, all sentences about sports, or all written like a fairy tale.</li>
-          <li>Aim for at least <strong>20-30 sentences</strong> as a group for the model to pick up on the pattern. More is better.</li>
+          <li>As a group, come up with your sentences together. They need to share something in common — a topic, a style, or a pattern — so the model can learn from them. For example, all sentences about sports, or all written like a fairy tale.</li>
+          <li>Aim for at least <strong>20–30 sentences</strong> as a group. More is better.</li>
           <li>Run the fine-tuning cell, then generate text and see how the model's output has changed.</li>
         </ol>
       </div>
